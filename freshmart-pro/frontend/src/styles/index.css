@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Additional custom styling overrides or animations */
+@layer base {
+  body {
+    @apply select-none;
+  }
+}

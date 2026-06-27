@@ -1,0 +1,50 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: freshmart-pro-backend
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:freshmart_db}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:Password@123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  flyway:
+    enabled: false # Handled via local dev seed scripts first
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970} # 256-bit secret key
+    expiration: ${JWT_EXPIRATION:900000} # 15 minutes
+    refreshExpiration: ${JWT_REFRESH_EXPIRATION:604800000} # 7 days
+  razorpay:
+    keyId: ${RAZORPAY_KEY_ID:rzp_test_mockId123}
+    keySecret: ${RAZORPAY_KEY_SECRET:mockSecretKey456}
+  aws:
+    s3:
+      bucketName: ${AWS_S3_BUCKET_NAME:freshmart-pro-assets}
+      accessKey: ${AWS_ACCESS_KEY_ID:}
+      secretKey: ${AWS_SECRET_ACCESS_KEY:}

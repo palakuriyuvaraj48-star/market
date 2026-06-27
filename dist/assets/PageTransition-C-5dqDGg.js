@@ -1,0 +1,1 @@
+import{l as t,m as a}from"./index-jzPyXfrk.js";const n=({children:i})=>t.jsx(a.main,{initial:{opacity:0,y:14},animate:{opacity:1,y:0},exit:{opacity:0,y:-14},transition:{duration:.22},children:i});export{n as P};

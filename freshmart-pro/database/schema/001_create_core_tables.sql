@@ -1,0 +1,118 @@
+CREATE TABLE roles (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(64) NOT NULL UNIQUE,
+  description VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE users (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  full_name VARCHAR(120) NOT NULL,
+  email VARCHAR(160) NOT NULL UNIQUE,
+  phone VARCHAR(24) UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  phone_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_roles (
+  user_id BIGINT NOT NULL,
+  role_id BIGINT NOT NULL,
+  PRIMARY KEY (user_id, role_id),
+  CONSTRAINT fk_user_roles_user FOREIGN KEY (user_id) REFERENCES users(id),
+  CONSTRAINT fk_user_roles_role FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+CREATE TABLE addresses (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id BIGINT NOT NULL,
+  label VARCHAR(80) NOT NULL,
+  recipient_name VARCHAR(120) NOT NULL,
+  phone VARCHAR(24) NOT NULL,
+  line1 VARCHAR(255) NOT NULL,
+  line2 VARCHAR(255),
+  city VARCHAR(100) NOT NULL,
+  state VARCHAR(100) NOT NULL,
+  postal_code VARCHAR(16) NOT NULL,
+  latitude DECIMAL(10, 7),
+  longitude DECIMAL(10, 7),
+  default_address BOOLEAN NOT NULL DEFAULT FALSE,
+  CONSTRAINT fk_addresses_user FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE categories (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(120) NOT NULL UNIQUE,
+  slug VARCHAR(140) NOT NULL UNIQUE,
+  image_url VARCHAR(500),
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  sort_order INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE sub_categories (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  category_id BIGINT NOT NULL,
+  name VARCHAR(120) NOT NULL,
+  slug VARCHAR(140) NOT NULL UNIQUE,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  CONSTRAINT fk_sub_categories_category FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE brands (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(120) NOT NULL UNIQUE,
+  slug VARCHAR(140) NOT NULL UNIQUE,
+  logo_url VARCHAR(500),
+  active BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE vendors (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id BIGINT NOT NULL UNIQUE,
+  business_name VARCHAR(160) NOT NULL,
+  gst_number VARCHAR(32) NOT NULL UNIQUE,
+  rating DECIMAL(3, 2) NOT NULL DEFAULT 0,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  CONSTRAINT fk_vendors_user FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE products (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(180) NOT NULL,
+  slug VARCHAR(220) NOT NULL UNIQUE,
+  description TEXT NOT NULL,
+  short_description VARCHAR(255) NOT NULL,
+  category_id BIGINT NOT NULL,
+  sub_category_id BIGINT,
+  brand_id BIGINT,
+  sku VARCHAR(80) NOT NULL UNIQUE,
+  barcode VARCHAR(80) NOT NULL UNIQUE,
+  weight VARCHAR(80) NOT NULL,
+  price DECIMAL(12, 2) NOT NULL,
+  discount_price DECIMAL(12, 2) NOT NULL,
+  stock_quantity INT NOT NULL DEFAULT 0,
+  availability VARCHAR(32) NOT NULL DEFAULT 'IN_STOCK',
+  rating DECIMAL(3, 2) NOT NULL DEFAULT 0,
+  review_count INT NOT NULL DEFAULT 0,
+  delivery_time VARCHAR(40) NOT NULL DEFAULT '10 min',
+  trending BOOLEAN NOT NULL DEFAULT FALSE,
+  featured BOOLEAN NOT NULL DEFAULT FALSE,
+  recommended BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_products_category FOREIGN KEY (category_id) REFERENCES categories(id),
+  CONSTRAINT fk_products_sub_category FOREIGN KEY (sub_category_id) REFERENCES sub_categories(id),
+  CONSTRAINT fk_products_brand FOREIGN KEY (brand_id) REFERENCES brands(id)
+);
+
+CREATE TABLE product_images (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  product_id BIGINT NOT NULL,
+  url VARCHAR(500) NOT NULL,
+  alt_text VARCHAR(180) NOT NULL,
+  primary_image BOOLEAN NOT NULL DEFAULT FALSE,
+  sort_order INT NOT NULL DEFAULT 0,
+  CONSTRAINT fk_product_images_product FOREIGN KEY (product_id) REFERENCES products(id)
+);
